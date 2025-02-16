@@ -17,8 +17,16 @@ Including another URLconf
  
 from django.contrib import admin
 from django.urls import path, include
+from account.views import signup_view,logout_view,login_view
+
+handler404 = 'mysite.views.custom_404'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('journal_homepage.urls')),   
+    # path('signup', include('account.urls')),   
+    path('signup/', signup_view, name='signup'),
+    path('logout/', logout_view, name='logout'),
+    path('login/', login_view, name='login'),
+
 ]

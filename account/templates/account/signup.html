@@ -1,0 +1,57 @@
+<form method="post">
+    {% csrf_token %} <!-- CSRF token -->
+
+    {% if error %}
+    <div class="error-message">
+        {{ message }}
+    </div>
+    {% endif %}
+
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required value="{{ request.POST.username }}">
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
+    </div>
+
+    <button type="submit">Sign Up</button>
+</form>
+
+<style>
+    .error-message {
+        color: red;
+        margin-bottom: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>

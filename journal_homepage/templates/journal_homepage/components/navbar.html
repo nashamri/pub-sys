@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 
 <head>
@@ -52,6 +52,134 @@
             <span class="icon" style="color: #999; padding: 0.5rem;">
                 <i class="fas fa-search"></i>
             </span>
+        </div>
+    </nav>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .custom-navbar {
+            display: flex;
+            justify-content: space-between;
+            /* Changed to space-between */
+            align-items: center;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-center {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .nav-link {
+            color: #4a4a4a;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .signup-button {
+            background-color: #485fc7;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .signup-button:hover {
+            background-color: #3e55b0;
+            color: white;
+        }
+
+        .login-button {
+            color: #485fc7;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #485fc7;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="custom-navbar">
+        <div>
+            <a>
+                {% load static %}
+                <img src="{% static 'journal_homepage/images/logo.svg' %}" alt="My image" style="max-height: 40px;">
+            </a>
+        </div>
+
+        <div class="navbar-center">
+            <a class="nav-link">Home</a>
+            <a class="nav-link">Journals</a>
+            <a class="nav-link">Resources</a>
+            <a class="nav-link">About</a>
+            <a class="nav-link">Help</a>
+        </div>
+
+        <div class="navbar-right">
+            <span class="icon" style="color: #999;">
+                <i class="fas fa-search"></i>
+            </span>
+
+            {% if user.is_authenticated %}
+            <div class="user-menu">
+                <div class="user-avatar">
+                    {{ user.username|make_list|first|upper }}
+                </div>
+                <span>{{ user.username }}</span>
+                <a href="{% url 'logout' %}" class="nav-link">
+                    <span class="icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </span>
+                </a>
+            </div>
+            {% else %}
+            <div class="auth-buttons">
+                <a href="{% url 'login' %}" class="login-button">Login</a>
+
+                <a href="{% url 'signup' %}" class="signup-button">Sign Up</a>
+            </div>
+            {% endif %}
         </div>
     </nav>
 </body>
