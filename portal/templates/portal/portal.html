@@ -1,144 +1,100 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mac-style UI</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        }
-
-        /* Navigation Bar */
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: #f8f9fa;
-            padding: 12px 20px;
-            border-bottom: 1px solid #dee2e6;
-            z-index: 1000;
-        }
-
-        /* Tab Container */
-        .tabs {
-            margin-top: 60px; /* Offset for fixed navbar */
-            padding: 0 20px;
-        }
-
-        /* Tab Links */
-        .tab-nav {
-            display: flex;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .tab-link {
-            padding: 12px 20px;
-            cursor: pointer;
-            color: #666;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            border-bottom: 2px solid transparent;
-        }
-
-        .tab-link.active {
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
-        }
-
-        .tab-link:hover {
-            background-color: #f1f1f1;
-        }
-
-        /* Tab Content */
-        .tab-content {
-            display: none;
-            padding: 20px;
-            animation: fadeIn 0.3s;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Content Styling */
-        .content {
-            max-width: 800px;
-            margin: 20px auto;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-    </style>
+    <title>Access Portal - {{ active_tab|title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block extra_css %}{% endblock %}
 </head>
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <span style="font-weight: 500;">My App</span>
-    </nav>
 
-    <!-- Tab Navigation -->
-    <div class="tabs">
-        <div class="tab-nav">
-            <div class="tab-link active" onclick="openTab(event, 'p1')">P1</div>
-            <div class="tab-link" onclick="openTab(event, 'p2')">P2</div>
-        </div>
+<body class="min-h-screen bg-gray-50">
+    {% include 'portal/components/nav.html' %}
+    {% include 'portal/components/sidebar.html' %}
 
-        <!-- Tab Contents -->
-        <div id="p1" class="tab-content active">
-            <div class="content">
-                <h2>Page 1 Content</h2>
-                <p>This is the content for page one. Keep it simple and clean with plenty of white space.</p>
-                <p>Mac-style UI elements include:</p>
-                <ul>
-                    <li>Subtle shadows</li>
-                    <li>Minimal color palette</li>
-                    <li>Clean typography</li>
-                    <li>Smooth transitions</li>
-                </ul>
+    <div class="p-4 sm:ml-64">
+        <div class="p-4 mt-14">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-2xl font-bold">{{ active_tab|title }} Mode</h1>
+
+                <!-- Toggle mode button - only show if in upload mode or user is editor -->
+                {% if active_tab == 'upload' or is_editor %}
+                <button id="toggle-mode-btn" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+                    Switch to {% if active_tab == 'upload' %}Viewer{% else %}Upload{% endif %} Mode
+                </button>
+                {% endif %}
             </div>
-        </div>
 
-        <div id="p2" class="tab-content">
-            <div class="content">
-                <h2>Page 2 Content</h2>
-                <p>This is the content for page two. Maintain consistent spacing and alignment.</p>
-                <p>Features include:</p>
-                <ul>
-                    <li>Responsive design</li>
-                    <li>Clear visual hierarchy</li>
-                    <li>Subtle hover effects</li>
-                    <li>Clean interface elements</li>
-                </ul>
+            {% if active_tab == 'upload' %}
+            <!-- Upload Component -->
+            {% include 'portal/components/upload.html' %}
+            {% elif active_tab == 'viewer' %}
+            {% if is_editor %}
+            <!-- Viewer Component -->
+            {% include 'portal/components/viewer.html' %}
+            {% else %}
+            <!-- Permission Error Message -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+                    <span class="font-medium">Permission Denied!</span> {{ permission_error }}
+                </div>
+                <p>You need to be a member of the Editor group to view files.</p>
             </div>
+            {% endif %}
+            {% endif %}
         </div>
     </div>
 
+    <!-- Consolidated JavaScript for mode toggling -->
     <script>
-        function openTab(evt, tabName) {
-            // Hide all tab contents
-            const tabContents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < tabContents.length; i++) {
-                tabContents[i].classList.remove("active");
-            }
-
-            // Remove active class from all tab links
-            const tabLinks = document.getElementsByClassName("tab-link");
-            for (let i = 0; i < tabLinks.length; i++) {
-                tabLinks[i].classList.remove("active");
-            }
-
-            // Show the selected tab content and mark the tab as active
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
+        // Single function to handle mode toggling across the application
+        function togglePortalMode() {
+            $.ajax({
+                url: '{% url "portal:toggle_mode" %}',
+                type: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    if (response.status === 'success') {
+                        location.reload();
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 403) {
+                        alert(xhr.responseJSON.message || "Permission denied");
+                    } else {
+                        alert("An error occurred. Please try again.");
+                    }
+                }
+            });
         }
+
+        // Initialize all event handlers when the document is ready
+        $(document).ready(function () {
+            // Toggle button in the header
+            $('#toggle-mode-btn').on('click', function (e) {
+                e.preventDefault();
+                togglePortalMode();
+            });
+
+            // Mode links in the sidebar
+            $('.mode-link').on('click', function (e) {
+                e.preventDefault();
+                const targetMode = $(this).data('mode');
+                const currentMode = '{{ active_tab }}';
+
+                // Only toggle if changing modes
+                if (currentMode !== targetMode) {
+                    togglePortalMode();
+                }
+            });
+        });
     </script>
 </body>
+
 </html>

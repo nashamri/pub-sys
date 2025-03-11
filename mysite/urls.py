@@ -28,6 +28,7 @@ urlpatterns = [
     path('signup/', signup_view, name='signup'),
     path('logout/', logout_view, name='logout'),
     path('login/', login_view, name='login'),
-    path('portal/', portal, name='portal'),
+    #path('portal/', portal, name='portal'),
+    path('', include('portal.urls'))
 
 ]

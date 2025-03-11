@@ -1,0 +1,21 @@
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-xl font-bold mb-4">Uploaded Files</h2>
+
+    <div class="overflow-x-auto">
+        <div class="flex space-x-4 pb-4 overflow-x-scroll">
+            {% if files %}
+            {% for file in files %}
+            <div class="min-w-64 bg-gray-50 p-4 border rounded-md flex flex-col">
+                <div class="font-semibold truncate">{{ file.upload.name|default:"Unnamed File" }}</div>
+                <div class="text-sm text-gray-500">Uploaded: {{ file.uploaded_at|date:"M d, Y" }}</div>
+                <div class="text-sm text-gray-500">By: {{ file.uploaded_by.username }}</div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="p-4 bg-gray-50 rounded-md text-gray-500">
+                No files have been uploaded yet.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from django.shortcuts import redirect
 from django.http import Http404
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -126,8 +129,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+MEDIA_URL = "media/"
+
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "access_key": os.environ['AWS_ACCESS_KEY_ID'],
+            "secret_key": os.environ['AWS_SECRET_ACCESS_KEY'],
+            "bucket_name": os.environ['AWS_STORAGE_BUCKET_NAME'],
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3StaticStorage",
+        "OPTIONS": {
+            "access_key": os.environ['AWS_ACCESS_KEY_ID'],
+            "secret_key": os.environ['AWS_SECRET_ACCESS_KEY'],
+            "bucket_name": os.environ['AWS_STORAGE_BUCKET_NAME'],
+        },
+    }
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+ 
