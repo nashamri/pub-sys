@@ -1,0 +1,159 @@
+<!-- portal/components/upload.html -->
+<div class="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+    <form id="upload-form" method="POST" action="{% url 'portal:upload_file' %}" enctype="multipart/form-data"
+        class="space-y-4">
+        {% csrf_token %}
+
+        <div class="relative">
+            <input type="file" name="file" id="file-input" class="hidden">
+            <label for="file-input" id="file-label"
+                class="block w-full px-4 py-3 text-center border-2 border-dashed border-gray-300 rounded-md cursor-pointer bg-gray-50 hover:bg-gray-100 transition duration-300">
+                Choose a file
+            </label>
+        </div>
+
+        <button type="submit" id="upload-button"
+            class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-300">
+            Upload
+        </button>
+    </form>
+
+    <!-- Upload states -->
+    <div id="upload-waiting" class="hidden py-8 flex flex-col items-center justify-center">
+        <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="text-gray-700">Uploading file...</p>
+    </div>
+
+    <div id="upload-success" class="hidden py-8 flex flex-col items-center justify-center">
+        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mb-4 animate-scale-in">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+        <p class="text-gray-700">File successfully uploaded!</p>
+    </div>
+
+    <div id="upload-error" class="hidden py-8 flex flex-col items-center justify-center">
+        <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </div>
+        <p id="error-message" class="text-gray-700">Upload failed.</p>
+    </div>
+</div>
+
+<!-- Tailwind-compatible animation classes -->
+<style>
+    @keyframes scale-in {
+        from {
+            transform: scale(0);
+        }
+
+        to {
+            transform: scale(1);
+        }
+    }
+
+    .animate-scale-in {
+        animation: scale-in 0.3s ease-out;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('upload-form');
+        const fileInput = document.getElementById('file-input');
+        const fileLabel = document.getElementById('file-label');
+        const uploadButton = document.getElementById('upload-button');
+        const waitingState = document.getElementById('upload-waiting');
+        const successState = document.getElementById('upload-success');
+        const errorState = document.getElementById('upload-error');
+        const errorMessage = document.getElementById('error-message');
+
+        // Update label when file is selected
+        fileInput.addEventListener('change', function () {
+            if (this.files.length > 0) {
+                fileLabel.textContent = this.files[0].name;
+                fileLabel.classList.remove('border-gray-300', 'bg-gray-50');
+                fileLabel.classList.add('border-blue-300', 'bg-blue-50');
+            } else {
+                fileLabel.textContent = 'Choose a file';
+                fileLabel.classList.remove('border-blue-300', 'bg-blue-50');
+                fileLabel.classList.add('border-gray-300', 'bg-gray-50');
+            }
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Validate file selection
+            if (fileInput.files.length === 0) {
+                errorMessage.textContent = 'Please select a file first.';
+                errorState.classList.remove('hidden');
+                successState.classList.add('hidden');
+                waitingState.classList.add('hidden');
+                form.classList.add('hidden');
+
+                setTimeout(function () {
+                    errorState.classList.add('hidden');
+                    form.classList.remove('hidden');
+                }, 3000);
+
+                return;
+            }
+
+            // Hide form, show waiting spinner
+            form.classList.add('hidden');
+            waitingState.classList.remove('hidden');
+            successState.classList.add('hidden');
+            errorState.classList.add('hidden');
+
+            // Create form data for AJAX submission
+            const formData = new FormData(form);
+
+            // Submit form via AJAX
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Upload failed: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Show success state
+                    waitingState.classList.add('hidden');
+                    successState.classList.remove('hidden');
+
+                    // Reset form after 3 seconds
+                    setTimeout(function () {
+                        successState.classList.add('hidden');
+                        form.classList.remove('hidden');
+                        form.reset();
+                        fileLabel.textContent = 'Choose a file';
+                        fileLabel.classList.remove('border-blue-300', 'bg-blue-50');
+                        fileLabel.classList.add('border-gray-300', 'bg-gray-50');
+                    }, 3000);
+                })
+                .catch(error => {
+                    // Show error state
+                    waitingState.classList.add('hidden');
+                    errorState.classList.remove('hidden');
+                    errorMessage.textContent = error.message;
+
+                    // Reset form after 3 seconds
+                    setTimeout(function () {
+                        errorState.classList.add('hidden');
+                        form.classList.remove('hidden');
+                    }, 3000);
+                });
+        });
+    });
+</script>

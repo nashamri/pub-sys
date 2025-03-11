@@ -1,0 +1,24 @@
+<aside id="logo-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+    aria-label="Sidebar">
+    <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+        <p class="text-center font-bold -mx-3 bg-white">Access Portal</p>
+        <ul class="space-y-2 font-medium">
+            <li>
+                <a href="#" data-mode="upload"
+                    class="mode-link flex items-center p-2 text-gray-900 rounded-lg {% if active_tab == 'upload' %}bg-gray-200{% endif %} hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <span class="ms-3">Upload</span>
+                </a>
+            </li>
+            <!-- Only show viewer option if user has editor permissions -->
+            {% if is_editor %}
+            <li>
+                <a href="#" data-mode="viewer"
+                    class="mode-link flex items-center p-2 text-gray-900 rounded-lg {% if active_tab == 'viewer' %}bg-gray-200{% endif %} hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <span class="ms-3">Viewer</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</aside>

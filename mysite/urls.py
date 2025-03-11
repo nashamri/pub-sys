@@ -18,7 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from account.views import signup_view,logout_view,login_view
-
+from portal.views import portal
 handler404 = 'mysite.views.custom_404'
 
 urlpatterns = [
@@ -28,5 +28,7 @@ urlpatterns = [
     path('signup/', signup_view, name='signup'),
     path('logout/', logout_view, name='logout'),
     path('login/', login_view, name='login'),
+    #path('portal/', portal, name='portal'),
+    path('', include('portal.urls'))
 
 ]
