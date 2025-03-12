@@ -1,0 +1,21 @@
+from django.db import models
+from django.utils import timezone
+from django.contrib.auth.models import User
+
+# Create your models here.
+
+class Post(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    summary = models.CharField(max_length=300, blank=True)
+    date_posted = models.DateTimeField(default=timezone.now)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.summary:
+            # Create summary from first 50 words if not provided
+            self.summary = ' '.join(self.content.split()[:50]) + '...'
+        super().save(*args, **kwargs)

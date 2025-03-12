@@ -1,0 +1,35 @@
+{% extends "blog/base.html" %}
+{% block content %}
+    <div class="columns is-centered">
+        <div class="column is-8">
+            <div class="box">
+                <h1 class="title is-2">{{ object.title }}</h1>
+                <div class="level">
+                    <div class="level-left">
+                        <div class="level-item">
+                            <span class="icon">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <span>{{ object.author }}</span>
+                        </div>
+                        <div class="level-item">
+                            <span class="icon">
+                                <i class="fas fa-calendar"></i>
+                            </span>
+                            <span>{{ object.date_posted|date:"F d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="content is-medium mt-5">
+                    {{ object.content|linebreaks }}
+                </div>
+                <a href="{% url 'blog-home' %}" class="button is-primary">
+                    <span class="icon">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                    <span>Back to Posts</span>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock content %} 

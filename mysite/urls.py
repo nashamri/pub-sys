@@ -28,5 +28,5 @@ urlpatterns = [
     path('signup/', signup_view, name='signup'),
     path('logout/', logout_view, name='logout'),
     path('login/', login_view, name='login'),
-
+    path('blog/', include('blog.urls')),
 ]
