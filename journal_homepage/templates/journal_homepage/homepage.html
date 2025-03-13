@@ -26,9 +26,9 @@
 
 <body>
     {% include 'journal_homepage/components/navbar.html' %}
-    <div class="center-text">
-        <h1 class="welcome">{{ message }}</h1>
-    </div>
+
+    {% block content %}
+    {% endblock %}
 </body>
 
 </html>
