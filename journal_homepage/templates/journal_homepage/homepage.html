@@ -26,9 +26,25 @@
 
 <body>
     {% include 'journal_homepage/components/navbar.html' %}
-    <div class="center-text">
-        <h1 class="welcome">{{ message }}</h1>
-    </div>
+
+    {%if user.is_authenticated %}
+
+        {% if is_author %}
+            <a href="{% url 'author_home' %}" class="button">Author Home</a>
+        {% endif %}
+
+        {% if is_reviewer %}
+            <a href="{% url 'reviewer_home' %}" class="button">Reviewer Home</a>
+        {% endif %} 
+
+        {% block content %}
+        {% endblock %}
+    {%else%}
+        <div class="center-text">
+            <h1 class="welcome">Welcome to the Journal</h1>
+        </div>
+    {%endif%}
+
 </body>
 
 </html>
