@@ -1,0 +1,81 @@
+{% extends 'journal_homepage/components/navbar.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="title is-2 mb-6">Reviewer Dashboard</h1>
+
+    <!-- القسم الأول: الأوراق البحثية الجديدة -->
+    <div class="box">
+        <h2 class="title is-4">الأوراق البحثية الجديدة</h2>
+        {% if new_papers %}
+            {% for paper in new_papers %}
+            <div class="card mb-3">
+                <div class="card-content">
+                    <h3 class="title is-5">{{ paper.title }}</h3>
+                    <p class="subtitle is-6">تاريخ الإرسال: {{ paper.submission_date|date:"d/m/Y" }}</p>
+                    <div class="buttons">
+                        <a href="#" class="button is-primary">بدء المراجعة</a>
+                        <a href="#" class="button is-info">تفاصيل البحث</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>لا توجد أوراق بحثية جديدة</p>
+        {% endif %}
+    </div>
+
+    <!-- القسم الثاني: الأوراق تحت المراجعة -->
+    <div class="box">
+        <h2 class="title is-4">الأوراق تحت المراجعة</h2>
+        {% if in_review_papers %}
+            {% for paper in in_review_papers %}
+            <div class="card mb-3">
+                <div class="card-content">
+                    <h3 class="title is-5">{{ paper.title }}</h3>
+                    <p class="subtitle is-6">تاريخ بدء المراجعة: {{ paper.review_date|date:"d/m/Y" }}</p>
+                    <div class="buttons">
+                        <a href="#" class="button is-warning">متابعة المراجعة</a>
+                        <a href="#" class="button is-success">إنهاء المراجعة</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>لا توجد أوراق قيد المراجعة</p>
+        {% endif %}
+    </div>
+
+    <!-- القسم الثالث: الأوراق المنتهية -->
+    <div class="box">
+        <h2 class="title is-4">الأوراق المنتهية</h2>
+        {% if completed_papers %}
+            {% for paper in completed_papers %}
+            <div class="card mb-3">
+                <div class="card-content">
+                    <h3 class="title is-5">{{ paper.title }}</h3>
+                    <p class="subtitle is-6">تاريخ إنهاء المراجعة: {{ paper.review_date|date:"d/m/Y" }}</p>
+                    <div class="buttons">
+                        <a href="#" class="button is-info">عرض التقييم</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>لا توجد أوراق منتهية المراجعة</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .box {
+        margin-bottom: 2rem;
+    }
+    .card {
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %} 

@@ -1,0 +1,20 @@
+{% extends 'journal_homepage/components/navbar.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <div class="box">
+                <h2 class="title">تسجيل الدخول</h2>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <button class="button is-primary" type="submit">تسجيل الدخول</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
