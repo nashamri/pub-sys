@@ -33,6 +33,7 @@
               pip
               django
               django-types
+              python-dotenv
 
             ]);
         };
