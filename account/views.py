@@ -66,3 +66,15 @@ def signup_view(request):
     return render(request, 'account/signup.html', {
         'message': 'Please sign up!'
     })
+
+
+def signup_test(request):
+    if request.method == 'POST':
+      
+        messages.success(
+            request, 'Your author account has been created successfully!')
+        # Redirect to homepage or another appropriate page
+        return redirect('home')
+
+    # If it's a GET request, just render the form template
+    return render(request, 'account/mutilform.html')

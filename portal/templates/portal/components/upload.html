@@ -13,7 +13,7 @@
         </div>
 
         <button type="submit" id="upload-button"
-            class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-300">
+            class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-300 hidden">
             Upload
         </button>
     </form>
@@ -79,10 +79,16 @@
                 fileLabel.textContent = this.files[0].name;
                 fileLabel.classList.remove('border-gray-300', 'bg-gray-50');
                 fileLabel.classList.add('border-blue-300', 'bg-blue-50');
+
+                // Show upload button when file is selected
+                uploadButton.classList.remove('hidden');
             } else {
                 fileLabel.textContent = 'Choose a file';
                 fileLabel.classList.remove('border-blue-300', 'bg-blue-50');
                 fileLabel.classList.add('border-gray-300', 'bg-gray-50');
+
+                // Hide upload button when no file is selected
+                uploadButton.classList.add('hidden');
             }
         });
 
@@ -140,6 +146,9 @@
                         fileLabel.textContent = 'Choose a file';
                         fileLabel.classList.remove('border-blue-300', 'bg-blue-50');
                         fileLabel.classList.add('border-gray-300', 'bg-gray-50');
+
+                        // Hide upload button after reset
+                        uploadButton.classList.add('hidden');
                     }, 3000);
                 })
                 .catch(error => {

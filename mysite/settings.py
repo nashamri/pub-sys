@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "journal_homepage",
     "account",
-    "portal"
+    "portal",
+    "admin_interface"
     
 ]
 
@@ -67,7 +68,9 @@ ROOT_URLCONF = "mysite.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+    #    "DIRS": [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -130,26 +133,29 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 MEDIA_URL = "media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'bucket/')  # All files will go here
 
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+os.makedirs(MEDIA_ROOT, exist_ok=True)
 
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": {
-            "access_key": os.environ['AWS_ACCESS_KEY_ID'],
-            "secret_key": os.environ['AWS_SECRET_ACCESS_KEY'],
-            "bucket_name": os.environ['AWS_STORAGE_BUCKET_NAME'],
-        },
-    },
-    "staticfiles": {
-        "BACKEND": "storages.backends.s3.S3StaticStorage",
-        "OPTIONS": {
-            "access_key": os.environ['AWS_ACCESS_KEY_ID'],
-            "secret_key": os.environ['AWS_SECRET_ACCESS_KEY'],
-            "bucket_name": os.environ['AWS_STORAGE_BUCKET_NAME'],
-        },
-    }
-}
+# STORAGES = {
+#     "default": {
+#         "BACKEND": "storages.backends.s3.S3Storage",
+#         "OPTIONS": {
+#             "access_key": os.environ['AWS_ACCESS_KEY_ID'],
+#             "secret_key": os.environ['AWS_SECRET_ACCESS_KEY'],
+#             "bucket_name": os.environ['AWS_STORAGE_BUCKET_NAME'],
+#         },
+#     },
+#     "staticfiles": {
+#         "BACKEND": "storages.backends.s3.S3StaticStorage",
+#         "OPTIONS": {
+#             "access_key": os.environ['AWS_ACCESS_KEY_ID'],
+#             "secret_key": os.environ['AWS_SECRET_ACCESS_KEY'],
+#             "bucket_name": os.environ['AWS_STORAGE_BUCKET_NAME'],
+#         },
+#     }
+# }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
