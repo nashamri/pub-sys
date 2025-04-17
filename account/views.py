@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.db import IntegrityError
 from django.contrib.auth import logout
 from django.contrib import messages
-
+from .forms import UserRegistrationForm
 
 def logout_view(request):
     messages.get_messages(request).used = True  # Clear messages
@@ -78,3 +78,17 @@ def signup_test(request):
 
     # If it's a GET request, just render the form template
     return render(request, 'account/mutilform.html')
+
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Registration successful!')
+            return redirect('/')
+    else:
+        form = UserRegistrationForm()
+    
+    return render(request, 'account/register.html', {'form': form})
