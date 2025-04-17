@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>User List</title>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Main Table -->
+    <div class="max-w-6xl mx-auto p-4">
+        <table class="w-full bg-white">
+            <thead>
+                <tr class="border-b">
+                    <th class="text-left py-3 px-4">Username</th>
+                    <th class="text-left py-3 px-4">Signup Date</th>
+                    <th class="text-left py-3 px-4">Permissions</th>
+                    <th class="text-left py-3 px-4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 px-4">{{ user.username }}</td>
+                    <td class="py-3 px-4">{{ user.date_joined|date:"Y-m-d" }}</td>
+                    <td class="py-3 px-4">
+                        <div class="flex gap-1">
+                            <span
+                                class="px-2 py-1 rounded-full text-xs {% if user.is_active %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                                {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                            {% if user.is_staff %}
+                            <span class="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">Staff</span>
+                            {% endif %}
+                            {% if user.is_superuser %}
+                            <span class="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">Superuser</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <button
+                            onclick="openModal({{ user.id }}, '{{ user.username }}', {{ user.is_active|lower }}, {{ user.is_staff|lower }}, {{ user.is_superuser|lower }})"
+                            class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-3/4 max-w-3xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-semibold mb-4">Edit User - <span id="modalUsername"></span></h3>
+
+            <!-- Tabs -->
+            <div class="border-b border-gray-200 mb-4">
+                <ul class="flex flex-wrap -mb-px">
+                    <li class="mr-2">
+                        <button onclick="switchTab('basic')" id="basicTab"
+                            class="inline-block p-4 border-b-2 border-blue-500 text-blue-500">
+                            Basic Permissions
+                        </button>
+                    </li>
+                    <li class="mr-2">
+                        <button onclick="switchTab('groups')" id="groupsTab"
+                            class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300">
+                            Groups
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="switchTab('permissions')" id="permissionsTab"
+                            class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300">
+                            Custom Permissions
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Basic Permissions Tab -->
+            <div id="basicContent" class="tab-content">
+                <div class="space-y-4">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="isActive" class="rounded">
+                        <span>Active</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="isStaff" class="rounded">
+                        <span>Staff Status</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="isSuperuser" class="rounded">
+                        <span>Superuser Status</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Groups Tab -->
+            <div id="groupsContent" class="tab-content hidden">
+                <div id="groupsLoading" class="py-4 text-center">Loading groups...</div>
+                <div id="groupsList" class="space-y-2 max-h-60 overflow-y-auto">
+                    <!-- Groups will be inserted here dynamically -->
+                </div>
+            </div>
+
+            <!-- Permissions Tab -->
+            <div id="permissionsContent" class="tab-content hidden">
+                <div id="permissionsLoading" class="py-4 text-center">Loading permissions...</div>
+                <input type="text" id="permissionSearch" placeholder="Search permissions..."
+                    class="w-full p-2 border rounded mb-2">
+                <div id="permissionsList" class="space-y-1 max-h-60 overflow-y-auto">
+                    <!-- Permissions will be inserted here dynamically -->
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end space-x-3">
+                <button onclick="closeModal()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancel</button>
+                <button onclick="savePermissions()"
+                    class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+        let userGroups = [];
+        let userPermissions = [];
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('button[id$="Tab"]').forEach(tab => {
+                tab.classList.remove('border-blue-500', 'text-blue-500');
+                tab.classList.add('border-transparent');
+            });
+
+            // Show selected tab content and highlight tab
+            document.getElementById(tabName + 'Content').classList.remove('hidden');
+            document.getElementById(tabName + 'Tab').classList.add('border-blue-500', 'text-blue-500');
+            document.getElementById(tabName + 'Tab').classList.remove('border-transparent');
+
+            // If opening groups or permissions tabs, load the data
+            if (tabName === 'groups' || tabName === 'permissions') {
+                loadGroupsAndPermissions();
+            }
+        }
+
+        async function loadGroupsAndPermissions() {
+            if (!currentUserId) return;
+
+            try {
+                // Show loading indicators
+                document.getElementById('groupsLoading').classList.remove('hidden');
+                document.getElementById('permissionsLoading').classList.remove('hidden');
+
+                // Fetch groups and permissions data
+                const response = await fetch(`/admin/users/${currentUserId}/groups-permissions/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Hide loading indicators
+                    document.getElementById('groupsLoading').classList.add('hidden');
+                    document.getElementById('permissionsLoading').classList.add('hidden');
+
+                    // Store data globally for use when saving
+                    userGroups = result.data.groups;
+                    userPermissions = result.data.permissions;
+
+                    // Render groups
+                    renderGroups(result.data.groups);
+
+                    // Render permissions
+                    renderPermissions(result.data.permissions);
+                } else {
+                    alert(result.message || 'Error loading data');
+                }
+            } catch (error) {
+                console.error('Error fetching groups and permissions:', error);
+                alert('Error loading groups and permissions data');
+            }
+        }
+
+        function renderGroups(groups) {
+            const groupsContainer = document.getElementById('groupsList');
+            groupsContainer.innerHTML = '';
+
+            if (groups.length === 0) {
+                groupsContainer.innerHTML = '<p class="text-gray-500">No groups available</p>';
+                return;
+            }
+
+            groups.forEach(group => {
+                const groupElement = document.createElement('div');
+                groupElement.className = 'flex items-center space-x-2 py-1';
+                groupElement.innerHTML = `
+                    <input type="checkbox" id="group_${group.id}" class="group-checkbox rounded" 
+                           data-group-id="${group.id}" ${group.assigned ? 'checked' : ''}>
+                    <label for="group_${group.id}">${group.name}</label>
+                `;
+                groupsContainer.appendChild(groupElement);
+            });
+        }
+
+        function renderPermissions(permissions) {
+            const permissionsList = document.getElementById('permissionsList');
+            permissionsList.innerHTML = '';
+
+            if (permissions.length === 0) {
+                permissionsList.innerHTML = '<p class="text-gray-500">No permissions available</p>';
+                return;
+            }
+
+            // Group permissions by app_label
+            const permissionsByApp = {};
+            permissions.forEach(perm => {
+                const appName = perm.name.split('.')[0];
+                if (!permissionsByApp[appName]) {
+                    permissionsByApp[appName] = [];
+                }
+                permissionsByApp[appName].push(perm);
+            });
+
+            // Create sections for each app
+            for (const [appName, perms] of Object.entries(permissionsByApp)) {
+                const appSection = document.createElement('div');
+                appSection.className = 'mb-4';
+
+                const appHeader = document.createElement('h4');
+                appHeader.className = 'font-medium text-gray-700 mb-1';
+                appHeader.textContent = appName;
+                appSection.appendChild(appHeader);
+
+                const permsList = document.createElement('div');
+                permsList.className = 'ml-4 space-y-1';
+
+                perms.forEach(perm => {
+                    const permElement = document.createElement('div');
+                    permElement.className = 'flex items-center space-x-2 py-1';
+                    permElement.innerHTML = `
+                        <input type="checkbox" id="perm_${perm.id}" class="permission-checkbox rounded" 
+                               data-perm-id="${perm.id}" ${perm.assigned ? 'checked' : ''}>
+                        <label for="perm_${perm.id}" title="${perm.description}">${perm.name.split('.')[1]}</label>
+                    `;
+                    permsList.appendChild(permElement);
+                });
+
+                appSection.appendChild(permsList);
+                permissionsList.appendChild(appSection);
+            }
+
+            // Set up search functionality
+            document.getElementById('permissionSearch').addEventListener('input', function (e) {
+                const searchTerm = e.target.value.toLowerCase();
+                document.querySelectorAll('#permissionsList label').forEach(label => {
+                    const permItem = label.closest('div');
+                    const appSection = label.closest('.mb-4');
+
+                    if (label.textContent.toLowerCase().includes(searchTerm) ||
+                        label.title.toLowerCase().includes(searchTerm)) {
+                        permItem.style.display = '';
+                        if (appSection) {
+                            appSection.style.display = '';
+                        }
+                    } else {
+                        permItem.style.display = 'none';
+                    }
+                });
+
+                // Hide app sections if all their permissions are hidden
+                document.querySelectorAll('#permissionsList .mb-4').forEach(section => {
+                    const visiblePerms = Array.from(section.querySelectorAll('div[style=""]')).length;
+                    if (visiblePerms === 0) {
+                        section.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function openModal(userId, username, isActive, isStaff, isSuperuser) {
+            currentUserId = userId;
+            document.getElementById('modalUsername').textContent = username;
+            document.getElementById('isActive').checked = isActive;
+            document.getElementById('isStaff').checked = isStaff;
+            document.getElementById('isSuperuser').checked = isSuperuser;
+
+            // Reset tabs to basic
+            switchTab('basic');
+
+            // Show modal
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            currentUserId = null;
+        }
+
+        async function savePermissions() {
+            // Collect basic permissions
+            const data = {
+                is_active: document.getElementById('isActive').checked,
+                is_staff: document.getElementById('isStaff').checked,
+                is_superuser: document.getElementById('isSuperuser').checked
+            };
+
+            // Collect selected groups
+            const selectedGroups = [];
+            document.querySelectorAll('.group-checkbox:checked').forEach(checkbox => {
+                selectedGroups.push(parseInt(checkbox.dataset.groupId));
+            });
+            data.groups = selectedGroups;
+
+            // Collect selected permissions
+            const selectedPermissions = [];
+            document.querySelectorAll('.permission-checkbox:checked').forEach(checkbox => {
+                selectedPermissions.push(parseInt(checkbox.dataset.permId));
+            });
+            data.permissions = selectedPermissions;
+
+            try {
+                const response = await fetch(`/admin/users/${currentUserId}/update/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    window.location.reload();
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                alert('Error updating user');
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+
+</html>
