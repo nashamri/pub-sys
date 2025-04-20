@@ -1,177 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
     <style>
-        /* General styles */
-        body {
-            min-height: 100vh;
-            background-color: #f5f5f5;
-        }
-
-        .main-container {
-            padding: 2rem 1.5rem;
-        }
-
-        /* Form styling */
-        .form-container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 6px;
-            box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* Title styling */
-        .page-title {
-            font-family: 'Playfair Display', serif;
-            color: #363636;
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            color: #4a4a4a;
-            font-size: 1.5rem;
-            margin-top: 2rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #f5f5f5;
-        }
-
-        /* Form field styling */
-        .field {
-            margin-bottom: 1.5rem;
-        }
-
-        .label {
-            color: #363636;
-            font-weight: 600;
-        }
-
-        .help {
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-
-        .help.is-danger {
-            color: #f14668;
-        }
-
-        /* Input styling */
-        .input, .textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #dbdbdb;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .input:focus, .textarea:focus {
-            border-color: #485fc7;
-            box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
-        }
-
-        /* Button styling */
-        .button.is-primary {
-            background-color: #485fc7;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            transition: background-color 0.3s;
-        }
-
-        .button.is-primary:hover {
-            background-color: #364fc7;
-        }
-
-        /* Error message styling */
-        .error-message {
-            color: #f14668;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-
-        /* Success message styling */
-        .success-message {
-            background-color: #48c78e;
-            color: white;
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1.5rem;
+        .errorlist {
+            color: red;
+            list-style: none;
+            padding: 0;
+            margin: 5px 0;
         }
     </style>
 </head>
 
 <body>
+    <h1>step {{step}}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="step" value="{{ step }}">
 
-    <div class="main-container">
-        <div class="form-container">
-            <h1 class="page-title">Create Account</h1>
 
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="{% if message.tags %}{{ message.tags }}{% endif %} success-message">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+            {% if step == 1 %}
 
-            <form method="post" novalidate>
-                {% csrf_token %}
-                
-                <div class="form-section">
-                    <h2 class="section-title">Personal Information</h2>
-                    {% for field in form %}
-                        {% if field.name in 'username,first_name,last_name,email,password1,password2' %}
-                            <div class="field">
-                                <label class="label">{{ field.label }}</label>
-                                <div class="control">
-                                    {{ field.errors }}
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                        <p class="help">{{ field.help_text|safe }}</p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-
-                <div class="form-section">
-                    <h2 class="section-title">Affiliation Information</h2>
-                    {% for field in form %}
-                        {% if field.name in 'affiliation_name,affiliation_address,affiliation_country,affiliation_phone' %}
-                            <div class="field">
-                                <label class="label">{{ field.label }}</label>
-                                <div class="control">
-                                    {{ field.errors }}
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                        <p class="help">{{ field.help_text|safe }}</p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-
-                <div class="field">
-                    <div class="control">
-                        <button type="submit" class="button is-primary is-fullwidth">
-                            Register
-                        </button>
-                    </div>
-                </div>
-            </form>
+        <div>
+            {{ user_form.as_p }}
         </div>
-    </div>
+                    <button type="submit" name="action" value="submit">Submit</button>
+
+            {% endif %}
+        {% if step == 2 %}
+            <input type="hidden" name="crd" value="{{ crd }}">
+
+            <div>
+<!-- <div {% if step != 2 %}style="display:none;" {% endif %}> -->
+    {{ author_form.as_p }}
+        </div>
+ 
+ 
+            <button type="submit" name="action" value="submit">Submit</button>
+  
+ 
+         {% endif %}
+
+
+     </form>
 </body>
+
 </html>
