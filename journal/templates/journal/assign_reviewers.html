@@ -1,0 +1,69 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}Assign Reviewers - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="title">Assign Reviewers</h1>
+
+<div class="box">
+    <h2 class="subtitle">Article Details</h2>
+    <p><strong>Title:</strong> {{ article.title }}</p>
+    <p><strong>Author:</strong> {{ article.author.username }}</p>
+    <p><strong>Type:</strong> {{ article.get_type_display }}</p>
+    <p><strong>Submission Date:</strong> {{ article.submission_date }}</p>
+    <p><strong>Current Status:</strong> {{ article.get_decision_display }}</p>
+    
+    {% if article.pdf_file %}
+        <a href="{{ article.pdf_file.url }}" class="button is-link" target="_blank">
+            View PDF
+        </a>
+    {% endif %}
+</div>
+
+<div class="box">
+    <h2 class="subtitle">Assign Reviewers</h2>
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="field">
+            <label class="label">{{ form.reviewers.label }}</label>
+            <div class="control">
+                <div class="checkbox-group">
+                    {{ form.reviewers }}
+                </div>
+            </div>
+            {% if form.reviewers.errors %}
+                <p class="help is-danger">{{ form.reviewers.errors }}</p>
+            {% endif %}
+            <p class="help">Select users who should review this article.</p>
+        </div>
+        
+        <div class="field">
+            <div class="control">
+                <button type="submit" class="button is-primary">Save Assignments</button>
+                <a href="{% url 'assignment_page' %}" class="button is-light">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    .checkbox-group {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #dbdbdb;
+        border-radius: 4px;
+        padding: 10px;
+    }
+    
+    .checkbox-group label {
+        display: block;
+        padding: 5px;
+        margin-bottom: 5px;
+        border-bottom: 1px solid #f5f5f5;
+    }
+</style>
+{% endblock %}
+

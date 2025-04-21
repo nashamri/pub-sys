@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Scientific Journal{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <nav class="navbar" role="navigation" aria-label="main navigation">
+                <div class="navbar-brand">
+                    <a class="navbar-item" href="{% url 'home_page' %}">
+                        <strong>SciJournal</strong>
+                    </a>
+
+                    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </a>
+                </div>
+
+                <div id="navbarBasicExample" class="navbar-menu">
+                    <div class="navbar-start">
+                        <a class="navbar-item {% if request.resolver_match.url_name == 'home_page' %}is-active{% endif %}" href="{% url 'home_page' %}">
+                            Home
+                        </a>
+                        <a class="navbar-item {% if request.resolver_match.url_name == 'about_page' %}is-active{% endif %}" href="{% url 'about_page' %}">
+                            About
+                        </a>
+                        <a class="navbar-item {% if request.resolver_match.url_name == 'guidelines_page' %}is-active{% endif %}" href="{% url 'guidelines_page' %}">
+                            Guidelines
+                        </a>
+                        {% if user.is_authenticated %}
+                            {% if not user.is_staff and not user.is_superuser %}
+                                <a class="navbar-item {% if request.resolver_match.url_name == 'submissions_page' %}is-active{% endif %}" href="{% url 'submissions_page' %}">
+                                    Submissions
+                                </a>
+                                <a class="navbar-item {% if request.resolver_match.url_name == 'submit_article' %}is-active{% endif %}" href="{% url 'submit_article' %}">
+                                    Submit Article
+                                </a>
+                                <a class="navbar-item {% if request.resolver_match.url_name == 'reviewer_page' %}is-active{% endif %}" href="{% url 'reviewer_page' %}">
+                                    Reviewer
+                                </a>
+                            {% endif %}
+                            {% if user.is_staff or user.is_superuser %}
+                                <a class="navbar-item {% if request.resolver_match.url_name == 'assignment_page' %}is-active{% endif %}" href="{% url 'assignment_page' %}">
+                                    Assignment
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <div class="navbar-end">
+                        <div class="navbar-item">
+                            {% if user.is_authenticated %}
+                                <span class="mr-2">Welcome, <strong>{{ user.username }}</strong></span>
+                            {% endif %}
+                            <div class="buttons">
+                                {% if user.is_authenticated %}
+                                    <a class="button is-info {% if request.resolver_match.url_name == 'account_page' %}is-active{% endif %}" href="{% url 'account_page' %}">
+                                        Account
+                                    </a>
+                                    <form method="post" action="{% url 'logout_page' %}" style="display: inline; margin-left: 5px;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="button is-light">
+                                            Log out
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <a class="button is-primary {% if request.resolver_match.url_name == 'register_page' %}is-active{% endif %}" href="{% url 'register_page' %}">
+                                        <strong>Register</strong>
+                                    </a>
+                                    <a class="button is-light {% if request.resolver_match.url_name == 'login_page' %}is-active{% endif %}" href="{% url 'login_page' %}">
+                                        Log in
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="notification is-{{ message.tags }}"> <!-- Use Bulma notification classes based on message tags (e.g., success, error) -->
+                        <button class="delete"></button> <!-- Optional: Add a close button -->
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                <strong>Scientific Journal</strong> by Your Name/Organization. The source code is licensed
+                <a href="http://opensource.org/licenses/mit-license.php">MIT</a>.
+            </p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+    <script>
+        // Basic Bulma notification close button
+        document.addEventListener('DOMContentLoaded', () => {
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+        });
+
+        // Basic Bulma navbar burger toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+            if ($navbarBurgers.length > 0) {
+                $navbarBurgers.forEach( el => {
+                    el.addEventListener('click', () => {
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+

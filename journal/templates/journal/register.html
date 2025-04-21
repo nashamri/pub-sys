@@ -1,0 +1,60 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}Register - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="title">User Registration</h1>
+<div class="content">
+    <div class="box">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="fieldset">
+                <legend class="subtitle">Create Account</legend>
+                {{ form.non_field_errors }}
+                {{ form.as_p }}
+            </fieldset>
+            <div class="field">
+                <div class="control">
+                    <button type="submit" class="button is-link">Register</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <p>This will allow users to create accounts for submitting articles or reviewing.</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var affiliationSelect = document.getElementById('id_affiliation');
+    // The new affiliation fields are those with names starting with 'new_affiliation_'
+    var newAffiliationFields = [];
+    ['name', 'country', 'address', 'phone'].forEach(function(suffix) {
+        var fieldRow = document.getElementById('div_id_new_affiliation_' + suffix);
+        if (fieldRow) {
+            newAffiliationFields.push(fieldRow);
+        }
+    });
+
+    function toggleNewAffiliationFields() {
+        if (affiliationSelect && affiliationSelect.value === '__new__') {
+            newAffiliationFields.forEach(function(div) {
+                div.style.display = '';
+            });
+        } else {
+            newAffiliationFields.forEach(function(div) {
+                div.style.display = 'none';
+            });
+        }
+    }
+
+    if (affiliationSelect) {
+        affiliationSelect.addEventListener('change', toggleNewAffiliationFields);
+        // Initial check in case of form errors and re-render
+        toggleNewAffiliationFields();
+    }
+});
+</script>
+{% endblock %}
+

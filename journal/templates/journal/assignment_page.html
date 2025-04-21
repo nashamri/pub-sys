@@ -1,0 +1,80 @@
+{% extends 'journal/base.html' %}
+{% load journal_filters %}
+
+{% block title %}Assignment Page - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="title">Assignment Page</h1>
+<div class="content">
+    <p>Welcome to the Admin page. Here you can manage articles and assign reviewers.</p>
+    
+    {% if articles %}
+        <h2 class="subtitle">All Submitted Articles</h2>
+        <div class="table-container">
+            <table class="table is-striped is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Type</th>
+                        <th>Submission Date</th>
+                        <th>Status</th>
+                        <th>Current Reviewers</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in articles %}
+                    <tr>
+                        <td>{{ article.title }}</td>
+                        <td>{{ article.author.username }}</td>
+                        <td>{{ article.get_type_display }}</td>
+                        <td>{{ article.submission_date }}</td>
+                        <td>
+                            <span class="tag 
+                                {% if article.decision == 'accepted' %}is-success
+                                {% elif article.decision == 'rejected' %}is-danger
+                                {% elif article.decision == 'withdrawn' %}is-warning
+                                {% else %}is-info{% endif %}">
+                                {{ article.get_decision_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if article.reviewers.all %}
+                                <ul>
+                                {% for reviewer in article.reviewers.all|unique_reviewers %}
+                                    <li>{{ reviewer.username }}</li>
+                                {% endfor %}
+                                </ul>
+                            {% else %}
+                                <em>No reviewers assigned</em>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="buttons">
+                                {% if article.pdf_file %}
+                                    <a href="{{ article.pdf_file.url }}" class="button is-small" target="_blank">
+                                        View PDF
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'assign_reviewers' article.id %}" class="button is-primary is-small">
+                                    Assign Reviewers
+                                </a>
+                                <a href="{% url 'article_revisions' article.id %}" class="button is-info is-small">
+                                    View Revisions
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="notification is-info">
+            There are no articles in the system yet.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

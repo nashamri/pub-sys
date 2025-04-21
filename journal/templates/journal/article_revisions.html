@@ -1,0 +1,131 @@
+{% extends 'journal/base.html' %}
+{% load journal_filters %}
+
+{% block title %}Article Revisions - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="title">Article Revision History</h1>
+
+<div class="box">
+    <h2 class="subtitle">{{ article.title }}</h2>
+    <p><strong>Author:</strong> {{ article.author.username }}</p>
+    <p><strong>Type:</strong> {{ article.get_type_display }}</p>
+    <p><strong>Submission Date:</strong> {{ article.submission_date }}</p>
+    <p><strong>Current Status:</strong> {{ article.get_decision_display }}</p>
+    
+    {% if article.pdf_file %}
+        <a href="{{ article.pdf_file.url }}" class="button is-link" target="_blank">
+            View Current PDF
+        </a>
+    {% endif %}
+    
+    <a href="{% url 'admin_page' %}" class="button is-light mt-3">
+        Back to Admin Page
+    </a>
+</div>
+
+{% if reviewers_data %}
+<h2 class="subtitle">Review History by Reviewer</h2>
+
+{% for reviewer_id, data in reviewers_data.items %}
+<div class="box">
+    <h3 class="is-size-4">Reviewer: {{ data.username }}</h3>
+    
+    {% for review in data.reviews %}
+    <div class="notification {% if review.status == 'accepted' %}is-success{% elif review.status == 'rejected' %}is-danger{% elif review.status == 'minor_corrections' %}is-warning{% elif review.status == 'major_corrections' %}is-warning{% else %}is-info{% endif %} mt-4">
+        <h4 class="is-size-5">Revision {{ review.revision }} - {{ review.created_at|date:"F j, Y" }}</h4>
+        <p><strong>Status:</strong> {{ review.get_status_display }}</p>
+        <p><strong>Comments:</strong></p>
+        <div class="content">
+            {{ review.comments|linebreaks|default:"No comments provided." }}
+        </div>
+        
+        <!-- Show author responses to this review -->
+        {% with review_responses=responses|filter_by_review:review.id %}
+            {% if review_responses %}
+                <div class="mt-4 pl-4 border-left">
+                    <h5 class="is-size-6 has-text-weight-bold">Author Responses:</h5>
+                    {% for response in review_responses %}
+                        <div class="notification is-light is-info mt-2">
+                            <p><strong>Date:</strong> {{ response.created_at|date:"F j, Y" }}</p>
+                            <div class="content">
+                                {{ response.response_text|linebreaks }}
+                            </div>
+                            {% if response.revised_pdf %}
+                                <a href="{{ response.revised_pdf.url }}" class="button is-small is-info" target="_blank">
+                                    View Revised PDF
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+    {% endfor %}
+</div>
+{% endfor %}
+
+{% else %}
+<div class="notification is-info">
+    No reviews have been submitted for this article yet.
+</div>
+{% endif %}
+
+{% if responses %}
+<h2 class="subtitle">All Author Responses</h2>
+<div class="box">
+    <div class="timeline">
+        {% for response in responses %}
+        <div class="timeline-item">
+            <div class="timeline-marker is-info"></div>
+            <div class="timeline-content">
+                <p class="heading">{{ response.created_at|date:"F j, Y" }}</p>
+                <p><strong>Response to Reviewer #{{ response.review.reviewer.id }}</strong> (Revision {{ response.review.revision }})</p>
+                <div class="content">
+                    {{ response.response_text|linebreaks }}
+                </div>
+                {% if response.revised_pdf %}
+                    <a href="{{ response.revised_pdf.url }}" class="button is-small is-info" target="_blank">
+                        View Revised PDF
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    /* Simple timeline styling */
+    .timeline {
+        margin-left: 1rem;
+        padding-left: 1.5rem;
+        border-left: 2px solid #dbdbdb;
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    .timeline-marker {
+        position: absolute;
+        left: -2.35rem;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background-color: #3e8ed0;
+    }
+    .timeline-content {
+        padding-bottom: 1rem;
+    }
+    .border-left {
+        border-left: 3px solid #3e8ed0;
+        padding-left: 1rem;
+    }
+</style>
+{% endblock %}
+

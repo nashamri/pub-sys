@@ -2,7 +2,7 @@
 URL configuration for mysite project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
+    https://docs.djangoproject.com/en/4.2/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -14,19 +14,19 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
- 
 from django.contrib import admin
 from django.urls import path, include
-from account.views import signup_view,logout_view,login_view
-
-handler404 = 'mysite.views.custom_404'
+from django.conf import settings
+from django.conf.urls.static import static
+# Remove the direct import of journal views as we will use include
+# from journal import views as journal_views
 
 urlpatterns = [
+    # Include the journal app's URLs under the root path ''
+    path('', include('journal.urls')),
     path('admin/', admin.site.urls),
-    path('', include('journal_homepage.urls')),   
-    # path('signup', include('account.urls')),   
-    path('signup/', signup_view, name='signup'),
-    path('logout/', logout_view, name='logout'),
-    path('login/', login_view, name='login'),
-
 ]
+
+# Add media files serving in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

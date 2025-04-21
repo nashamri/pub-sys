@@ -1,0 +1,26 @@
+    {% extends 'journal/base.html' %}
+
+    {% block title %}Login - {{ block.super }}{% endblock %}
+
+    {% block content %}
+    <h1 class="title">Login</h1>
+    <div class="content">
+        <div class="box">
+            <form method="POST">
+                {% csrf_token %} <!-- Important for security -->
+                <fieldset class="fieldset">
+                    <legend class="subtitle">Enter Credentials</legend>
+                    {{ form.as_p }} <!-- Render the login form fields -->
+                </fieldset>
+                <div class="field">
+                    <div class="control">
+                        <button type="submit" class="button is-link">Log In</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <p>Don't have an account? <a href="{% url 'register_page' %}">Register here</a>.</p>
+    </div>
+    {% endblock %}
+    
+

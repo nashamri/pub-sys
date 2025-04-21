@@ -1,0 +1,68 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}Submissions - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="title">Submissions</h1>
+<div class="content">
+    <p>Welcome to the Author page. Here you can manage your article submissions.</p>
+    
+    <div class="buttons">
+        <a href="{% url 'submit_article' %}" class="button is-primary">
+            <strong>Submit New Article</strong>
+        </a>
+    </div>
+    
+    <h2 class="subtitle">Your Submitted Articles</h2>
+    
+    {% if articles %}
+        <div class="table-container">
+            <table class="table is-striped is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Submission Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in articles %}
+                    <tr>
+                        <td>{{ article.title }}</td>
+                        <td>{{ article.get_type_display }}</td>
+                        <td>{{ article.submission_date }}</td>
+                        <td>
+                            <span class="tag 
+                                {% if article.decision == 'accepted' %}is-success
+                                {% elif article.decision == 'rejected' %}is-danger
+                                {% elif article.decision == 'withdrawn' %}is-warning
+                                {% else %}is-info{% endif %}">
+                                {{ article.get_decision_display }}
+                            </span>
+                        </td>
+                            <div class="buttons">
+                                {% if article.pdf_file %}
+                                    <a href="{{ article.pdf_file.url }}" class="button is-small" target="_blank">
+                                        View PDF
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'article_detail' article.id %}" class="button is-info is-small">
+                                    Details & Reviews
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="notification is-info">
+            You haven't submitted any articles yet. Use the button above to submit your first article.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

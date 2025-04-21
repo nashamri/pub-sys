@@ -1,0 +1,62 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}Reviewer Page - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="title">Reviewer Page</h1>
+<div class="content">
+    <p>Welcome to the Reviewer page. Here you can see articles assigned to you for review.</p>
+    
+    {% if assigned_articles %}
+        <h2 class="subtitle">Articles Assigned for Review</h2>
+        <div class="table-container">
+            <table class="table is-striped is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Submission Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in assigned_articles %}
+                    <tr>
+                        <td>{{ article.title }}</td>
+                        <td>{{ article.get_type_display }}</td>
+                        <td>{{ article.submission_date }}</td>
+                        <td>
+                            <span class="tag 
+                                {% if article.decision == 'accepted' %}is-success
+                                {% elif article.decision == 'rejected' %}is-danger
+                                {% elif article.decision == 'withdrawn' %}is-warning
+                                {% else %}is-info{% endif %}">
+                                {{ article.get_decision_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="buttons">
+                                {% if article.pdf_file %}
+                                    <a href="{{ article.pdf_file.url }}" class="button is-small" target="_blank">
+                                        View PDF
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'review_article' article.id %}" class="button is-primary is-small">
+                                    Review
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="notification is-info">
+            You don't have any articles assigned for review at this time.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

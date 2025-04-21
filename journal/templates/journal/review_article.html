@@ -1,0 +1,108 @@
+{% extends 'journal/base.html' %}
+{% load journal_filters %}
+
+{% block title %}Review Article - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="title">Review Article</h1>
+
+<div class="box">
+    <h2 class="subtitle">Article Details</h2>
+    <p><strong>Title:</strong> {{ article.title }}</p>
+    <p><strong>Type:</strong> {{ article.get_type_display }}</p>
+    <p><strong>Submission Date:</strong> {{ article.submission_date }}</p>
+    <p><strong>Current Status:</strong> {{ article.get_decision_display }}</p>
+    {% if is_first_review %}
+        <p><strong>Your Current Revision:</strong> First Review</p>
+    {% else %}
+        <p><strong>Your Current Revision:</strong> {{ revision }}</p>
+    {% endif %}
+    
+    {% if article.pdf_file %}
+        <a href="{{ article.pdf_file.url }}" class="button is-link" target="_blank">
+            View PDF
+        </a>
+    {% endif %}
+</div>
+
+{% if not is_first_review %}
+<div class="box">
+    <h2 class="subtitle">Your Previous Reviews</h2>
+    {% for review in previous_reviews %}
+        <div class="notification {% if review.status == 'accepted' %}is-success{% elif review.status == 'rejected' %}is-danger{% elif review.status == 'minor_corrections' %}is-warning{% elif review.status == 'major_corrections' %}is-warning{% else %}is-info{% endif %}">
+            <h3 class="is-size-5">Revision {{ review.revision }} - {{ review.created_at|date:"F j, Y" }}</h3>
+            <p><strong>Status:</strong> {{ review.get_status_display }}</p>
+            <p><strong>Comments:</strong></p>
+            <div class="content">
+                {{ review.comments|linebreaks }}
+            </div>
+            
+            <!-- Show author responses to this review -->
+            {% with review_responses=responses|filter_by_review:review.id %}
+                {% if review_responses %}
+                    <div class="mt-4 pl-4 border-left">
+                        <h4 class="is-size-6 has-text-weight-bold">Author Responses:</h4>
+                        {% for response in review_responses %}
+                            <div class="notification is-light is-info mt-2">
+                                <p><strong>Date:</strong> {{ response.created_at|date:"F j, Y" }}</p>
+                                <div class="content">
+                                    {{ response.response_text|linebreaks }}
+                                </div>
+                                {% if response.revised_pdf %}
+                                    <a href="{{ response.revised_pdf.url }}" class="button is-small is-info" target="_blank">
+                                        View Revised PDF
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+<div class="box">
+<h2 class="subtitle">Submit Review {% if not is_first_review %}(Revision {{ revision }}){% else %}(First Review){% endif %}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="field">
+            <label class="label">Status</label>
+            <div class="control">
+                <div class="select">
+                    {{ form.status }}
+                </div>
+            </div>
+            <p class="help">
+                <strong>Note:</strong> 
+                <ul>
+                    <li>"Accepted" will mark the article as accepted</li>
+                    <li>"Rejected" will mark the article as rejected</li>
+                    <li>"Minor Corrections" or "Major Corrections" will request revisions from the author</li>
+                </ul>
+            </p>
+        </div>
+        
+        <div class="field">
+            <label class="label">Comments</label>
+            <div class="control">
+                {{ form.comments }}
+            </div>
+            <p class="help">Provide detailed feedback about the article.</p>
+        </div>
+        
+        <div class="field">
+            <div class="control">
+                <button type="submit" class="button is-primary">Submit Review</button>
+                <a href="{% url 'reviewer_page' %}" class="button is-light">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
+

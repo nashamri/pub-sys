@@ -1,0 +1,96 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}Submit Article - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="title">Submit a New Article</h1>
+<div class="content">
+    <div class="box">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="fieldset">
+                <legend class="subtitle">Article Details</legend>
+                {{ form.as_p }}
+            </fieldset>
+            <div class="field">
+                <div class="control">
+                    <button type="submit" class="button is-link">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add custom file input styling for Bulma
+    const fileInput = document.querySelector('input[type=file]');
+    if (fileInput) {
+        // Get the parent p tag that Django's form.as_p creates
+        const parentP = fileInput.closest('p');
+        if (!parentP) return;
+        
+        // Create a simple Bulma file input structure
+        const fileDiv = document.createElement('div');
+        fileDiv.className = 'file has-name is-fullwidth';
+        
+        const fileLabel = document.createElement('label');
+        fileLabel.className = 'file-label';
+        
+        const fileInputDiv = document.createElement('div');
+        fileInputDiv.className = 'file-input';
+        
+        const fileCta = document.createElement('span');
+        fileCta.className = 'file-cta';
+        
+        const fileIcon = document.createElement('span');
+        fileIcon.className = 'file-icon';
+        fileIcon.innerHTML = '<i class="fas fa-upload"></i>';
+        
+        const fileLabelSpan = document.createElement('span');
+        fileLabelSpan.className = 'file-label';
+        fileLabelSpan.textContent = 'Choose a PDF file...';
+        
+        const fileNameSpan = document.createElement('span');
+        fileNameSpan.className = 'file-name';
+        fileNameSpan.textContent = 'No file selected';
+        
+        // Build the structure
+        fileCta.appendChild(fileIcon);
+        fileCta.appendChild(fileLabelSpan);
+        
+        // Clone the file input to preserve any attributes and event handlers
+        const newFileInput = fileInput.cloneNode(true);
+        
+        // Build the structure
+        fileLabel.appendChild(newFileInput);
+        fileLabel.appendChild(fileCta);
+        fileLabel.appendChild(fileNameSpan);
+        fileDiv.appendChild(fileLabel);
+        
+        // Keep the label from Django's form but replace the input with our styled version
+        const label = parentP.querySelector('label');
+        
+        // Create a new container
+        const container = document.createElement('div');
+        if (label) container.appendChild(label);
+        container.appendChild(fileDiv);
+        
+        // Replace the entire p element with our new container
+        parentP.parentNode.replaceChild(container, parentP);
+        
+        // Update filename display when a file is selected
+        newFileInput.addEventListener('change', function() {
+            if (newFileInput.files.length > 0) {
+                fileNameSpan.textContent = newFileInput.files[0].name;
+            } else {
+                fileNameSpan.textContent = 'No file selected';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+
