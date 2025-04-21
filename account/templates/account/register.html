@@ -59,10 +59,12 @@
         .help {
             font-size: 0.875rem;
             margin-top: 0.25rem;
+            display: none;  /* Hide by default */
         }
 
         .help.is-danger {
             color: #f14668;
+            display: block;  /* Show when there's an error */
         }
 
         /* Input styling */
@@ -97,6 +99,7 @@
             color: #f14668;
             font-size: 0.875rem;
             margin-top: 0.25rem;
+            display: block;  /* Show error messages */
         }
 
         /* Success message styling */
@@ -106,6 +109,11 @@
             padding: 1rem;
             border-radius: 4px;
             margin-bottom: 1.5rem;
+        }
+
+        /* Show help text only when field has an error */
+        .field.has-error .help {
+            display: block;
         }
     </style>
 </head>
@@ -131,10 +139,14 @@
                     <h2 class="section-title">Personal Information</h2>
                     {% for field in form %}
                         {% if field.name in 'username,first_name,last_name,email,password1,password2' %}
-                            <div class="field">
+                            <div class="field {% if field.errors %}has-error{% endif %}">
                                 <label class="label">{{ field.label }}</label>
                                 <div class="control">
-                                    {{ field.errors }}
+                                    {% if field.errors %}
+                                        <div class="error-message">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
                                     {{ field }}
                                     {% if field.help_text %}
                                         <p class="help">{{ field.help_text|safe }}</p>
@@ -149,10 +161,14 @@
                     <h2 class="section-title">Affiliation Information</h2>
                     {% for field in form %}
                         {% if field.name in 'affiliation_name,affiliation_address,affiliation_country,affiliation_phone' %}
-                            <div class="field">
+                            <div class="field {% if field.errors %}has-error{% endif %}">
                                 <label class="label">{{ field.label }}</label>
                                 <div class="control">
-                                    {{ field.errors }}
+                                    {% if field.errors %}
+                                        <div class="error-message">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
                                     {{ field }}
                                     {% if field.help_text %}
                                         <p class="help">{{ field.help_text|safe }}</p>
