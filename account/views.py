@@ -8,8 +8,12 @@ from django.db import IntegrityError
 from django.contrib.auth import logout
 from django.contrib import messages
 
-from account.forms import AuthorForm
+from account.forms import PersonalInfoForm, AffiliationInfoForm, UserUpdateForm
+
+
 import base64
+
+ 
 
 
 def logout_view(request):
@@ -101,7 +105,9 @@ def register(request):
                     data.encode('utf-8')).decode('utf-8')
                 return render(request, 'account/register.html', {
                     'crd': b,  # Pass the entire POST data
-                    'author_form': AuthorForm(),
+                    'personal_form': PersonalInfoForm(),
+                    'affiliation_form': AffiliationInfoForm(),
+
                     'step': 2
                 })
             else:
@@ -123,13 +129,18 @@ def register(request):
             #user_form.is_valid() 
             #user = user_form.save()  # Create the User here
             # Now handle the Author form
-            author_form = AuthorForm(request.POST)
-            if author_form.is_valid():
+            personal_form = PersonalInfoForm(request.POST)
+            affiliation_form = AffiliationInfoForm(request.POST)
+
+            if personal_form.is_valid() and affiliation_form.is_valid():
                 user = User.objects.create_user(
                 username=username,
                 password=password
             )
-                author = author_form.save(commit=False)
+                author = personal_form.save(commit=False)
+                author.user = user
+                author.save()
+                author = affiliation_form.save(commit=False)
                 author.user = user
                 author.save()
 
@@ -139,7 +150,8 @@ def register(request):
             else:
                 return render(request, 'account/register.html', {
                     'crd': user_clean_data,
-                    'author_form': author_form,
+                    'personal_form': PersonalInfoForm(),
+                    'affiliation_form': AffiliationInfoForm(),
                     'step': 2
                 })
 
@@ -147,3 +159,41 @@ def register(request):
         'user_form': UserCreationForm(),
         'step': 1
     })
+
+
+def profile_view(request):
+    # Get the current user's author profile
+    try:
+        if request.method == 'POST':
+
+            u_form=UserUpdateForm(request.POST,instance=request.user)
+            if u_form.is_valid():
+                u_form.save()
+                messages.success(request, 'Update successful!')
+                return redirect('/profile')
+            # p_form = PersonalInfoForm()
+            # a_form = AffiliationInfoForm()
+            # personal_info = request.user.personalinfo
+            
+            # # Get the display value of the title (not the code)
+            # title_display = personal_info.get_title_display()
+            # name_display = personal_info.first_name
+        else:
+            u_form=UserUpdateForm(instance=request.user)
+
+        context = {
+                'u_form': u_form,
+                # 'p_form': PersonalInfoForm(),  # This will show "Dr." instead of "dr"
+                # 'a_form': AffiliationInfoForm()
+
+        }
+    except Exception as e:
+        # Handle case where user doesn't have personal/affiliation info
+        context = {
+            'personal_info': None,
+            'affiliation_info': None,
+            'title': None,
+            'error': str(e)
+        }
+
+    return render(request, 'account/profile.html', context)

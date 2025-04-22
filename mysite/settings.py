@@ -46,9 +46,15 @@ INSTALLED_APPS = [
     "journal_homepage",
     "account",
     "portal",
-    "admin_interface"
+    "admin_interface",
+    "crispy_forms",
+    "crispy_tailwind"
     
 ]
+ 
+
+CRISPY_ALLOWED_TEMPLATE_PACKS=("tailwind",)
+CRISPY_TEMPLATE_PACK="tailwind"
 
 MIDDLEWARE = [
 
@@ -78,7 +84,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-            ],
+            ] ,
         },
     },
 ]

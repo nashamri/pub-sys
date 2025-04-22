@@ -1,0 +1,22 @@
+{%load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
+
+</head>
+<body>
+<h1>Profile </h1>
+ 
+    <form method="post">
+        {% csrf_token %}
+    <div class="col-6 text-start"> {{u_form.label}} </div>
+    <div class="col-6"> {{u_form}} </div>
+
+            <button type="submit" name="action" value="submit">Save</button>
+</form>
+</body>
+</html>
