@@ -1,101 +1,22 @@
-{% load static %}
-{% load sidebar_tags %}
-
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Access Portal - {{ active_tab|title }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {% block extra_css %}{% endblock %}
+    <title>Document</title>
 </head>
+<body>
+    <h1>portal</h1>
 
-<body class="min-h-screen bg-gray-50">
-    {% include 'portal/components/nav.html' %}
-    <!-- {% include 'portal/components/sidebar.html' %} -->
-    {% sidebar_tags %}
-    <div class="p-4 sm:ml-64">
-        <div class="p-4 mt-14">
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="text-2xl font-bold">{{ active_tab|title }} Mode</h1>
 
-             </div>
+<a href="{% url 'portal:new_assignments' %}">Editor new_assignments</a></br>
+<a href="{% url 'portal:submit_manuscript' %}">submit_manuscript</a></br>
+<a href="{% url 'portal:rev_new_assignments' %}">reviewer new_assignments</a>
 
-            {% if active_tab == 'author' %}
-            <!-- Upload Component -->
-            {% include 'portal/author/author_main.html' %}
-            {% elif active_tab == 'editor' %}
-            {% if is_editor %}
-            <!-- Viewer Component -->
-             
-            {% include 'portal/portal/editor/editor_main.html' %}
+ 
 
-      
 
-            {% else %}
-            <!-- Permission Error Message -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
-                    <span class="font-medium">Permission Denied!</span> {{ permission_error }}
-                </div>
-                <p>You need to be a member of the Editor group to view files.</p>
-            </div>
-            {% endif %}
-            {% endif %}
-        </div>
-    </div>
 
-    <!-- Consolidated JavaScript for mode toggling -->
-    <script>
-        // Single function to handle mode toggling across the application
-        function togglePortalMode() {
-            $.ajax({
-                url: '{% url "portal:toggle_mode" %}',
-                type: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                success: function (response) {
-                    if (response.status === 'success') {
-                        location.reload();
-                    }
-                },
-                error: function (xhr) {
-                    if (xhr.status === 403) {
-                        alert(xhr.responseJSON.message || "Permission denied");
-                    } else {
-                        alert("An error occurred. Please try again.");
-                    }
-                }
-            });
-        }
 
-        // Initialize all event handlers when the document is ready
-        $(document).ready(function () {
-            // Toggle button in the header
-            $('#toggle-mode-btn').on('click', function (e) {
-                e.preventDefault();
-                togglePortalMode();
-            });
-
-            // Mode links in the sidebar
-            $('.mode-link').on('click', function (e) {
-                e.preventDefault();
-                const targetMode = $(this).data('mode');
-                const currentMode = '{{ active_tab }}';
-
-                // Only toggle if changing modes
-                if (currentMode !== targetMode) {
-                    togglePortalMode();
-                }
-            });
-        });
-    </script>
 </body>
-
 </html>

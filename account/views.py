@@ -168,6 +168,8 @@ def profile_view(request):
 
             u_form=UserUpdateForm(request.POST,instance=request.user)
             if u_form.is_valid():
+
+                
                 u_form.save()
                 messages.success(request, 'Update successful!')
                 return redirect('/profile')

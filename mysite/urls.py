@@ -30,12 +30,12 @@ urlpatterns = [
     # path('signup', include('account.urls')),   
     path('signup/', signup_view, name='signup'),
     path('signup_test/', signup_test, name='signup_test'),
-    path('register/', register, name='register'),
+    path('register/', register, name='signup'),
     path('profile/', profile_view, name='profile_view'),
 
     path('logout/', logout_view, name='logout'),
     path('login/', login_view, name='login'),
     #path('portal/', portal, name='portal'),
-    path('', include('portal.urls'))
+    path('portal/', include('portal.urls'))
 
 ]

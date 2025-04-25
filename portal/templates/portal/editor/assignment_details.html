@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}:</label>
+                {{ field }}
+            </div>
+            {% endfor %}
+            
+            <h2>
+                Files
+            </h2>
+                {% for file in attachments %}
+                <li>
+                    <a href="{{ file.file.url }}" target="_blank">{{ file.file.name }}</a>
+                    {% if file.description %} - {{ file.description }}{% endif %}
+                </li>
+                {% endfor %}
+
+             <a href="{% url 'portal:submit_manuscript' %}"> {{form.id}} </a>
+        <a href="{% url 'portal:assign_reviewer' submission.submission_id %}" class="btn btn-primary mt-3">Assign Reviewers</a>
+<td>
+ 
+</td>
+
+        </br> <a>-------------------------</a></br>
+            <button type="submit" class="btn btn-primary mt-3">Update Status</button>
+        </form>
+        
+</body>
+</html>
