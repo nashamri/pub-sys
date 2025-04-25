@@ -39,7 +39,7 @@ class Article(models.Model):
     type = models.CharField(max_length=20, choices=ARTICLE_TYPE_CHOICES)
     abstract = models.TextField(blank=True, null=True)
     keywords = models.CharField(max_length=255, blank=True, null=True)
-    Authors = models.CharField(max_length=255, blank=True, null=True)
+    authors = models.CharField(max_length=255, blank=True, null=True)
     pdf_file = models.FileField(upload_to='article_pdfs/', null=True, blank=True, help_text="Upload your article as a PDF file")
     submission_date = models.DateField()
     acceptance_date = models.DateField(null=True, blank=True)
