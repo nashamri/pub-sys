@@ -315,7 +315,7 @@ def assign_reviewers(request, article_id):
                 article.reviewers.add(reviewer)
             
             messages.success(request, f"Reviewers successfully assigned to '{article.title}'")
-            return redirect('admin_page')
+            return redirect('assignment_page')
     else:
         form = ReviewerAssignmentForm(article=article)
     
