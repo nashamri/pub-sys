@@ -51,6 +51,9 @@
                                 <a class="navbar-item {% if request.resolver_match.url_name == 'assignment_page' %}is-active{% endif %}" href="{% url 'assignment_page' %}">
                                     Assignment
                                 </a>
+                                <a class="navbar-item" href="{% url 'admin:index' %}">
+                                    Admin
+                                </a>
                             {% endif %}
                         {% endif %}
                     </div>
