@@ -3,11 +3,73 @@
 {% block title %}Home - {{ block.super }}{% endblock %}
 
 {% block content %}
-<h1 class="title">Welcome to the Scientific Journal</h1>
-<div class="content">
-    <p>This is the home page.</p>
-    <p>Future content like recent articles, news, etc., will go here.</p>
-    <!-- Add more content here as needed -->
+<div class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">Welcome to Our Scientific Journal</h1>
+            <h2 class="subtitle">Advancing Knowledge Through Research</h2>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-8">
+                <h2 class="title is-4">Latest Publications</h2>
+                <div class="box">
+                    <p class="has-text-grey">Recent articles will be displayed here.</p>
+                    <p>Stay tuned for our latest research publications and discoveries.</p>
+                </div>
+            </div>
+            
+            <div class="column is-4">
+                <h2 class="title is-4">Quick Links</h2>
+                <div class="box">
+                    <div class="buttons">
+                        <a href="{% url 'submit_article' %}" class="button is-primary is-fullwidth">
+                            Submit Your Article
+                        </a>
+                        <a href="{% url 'guidelines_page' %}" class="button is-info is-fullwidth">
+                            View Submission Guidelines
+                        </a>
+                        <a href="{% url 'about_page' %}" class="button is-link is-fullwidth">
+                            Learn About Our Journal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="columns">
+            <div class="column">
+                <h2 class="title is-4">Why Publish With Us?</h2>
+                <div class="box">
+                    <div class="content">
+                        <ul>
+                            <li>Rigorous peer-review process</li>
+                            <li>Open access publication</li>
+                            <li>Global readership</li>
+                            <li>Professional editorial support</li>
+                            <li>Rapid publication process</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="columns">
+            <div class="column">
+                <h2 class="title is-4">News & Announcements</h2>
+                <div class="box">
+                    <div class="content">
+                        <p>Stay updated with the latest news and announcements from our journal.</p>
+                        <p>Important updates about submission deadlines, special issues, and more will be posted here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
