@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h3>New Assignments</h3><br>
+     
+    <div class="container">
+        <h2>New Assignments</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Status</th>
+                    <th>Article Title</th>
+                    <th>Author Name</th>
+                    <th>Manuscript Number</th>
+
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for submission in submissions %}
+
+                <tr>
+                    <td><button>Edit</button></td>
+                    <td>{{submission.current_status}}</td>
+                    <td>
+<h2><a class="article-title" href="{% url 'portal:editor_assignment_details' submission.submission_id %}">{{ submission.title }}</a></h2>
+                    </td>
+
+                    <td>{{submission.author}}</td>
+                    <td>{{submission.submission_id}}</td>
+                    <td>{{submission.current_status}}</td>
+
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+  
+      
+    </div>
+
+</body>
+
+</html>

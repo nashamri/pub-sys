@@ -1,10 +1,20 @@
+import ast
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+
 from django.db import IntegrityError
 from django.contrib.auth import logout
 from django.contrib import messages
-from .forms import UserRegistrationForm
+
+from account.forms import PersonalInfoForm, AffiliationInfoForm, UserUpdateForm
+
+
+import base64
+
+ 
+
 
 def logout_view(request):
     messages.get_messages(request).used = True  # Clear messages
@@ -80,15 +90,112 @@ def signup_test(request):
     return render(request, 'account/mutilform.html')
 
 
+
 def register(request):
     if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, 'Registration successful!')
-            return redirect('/')
-    else:
-        form = UserRegistrationForm()
-    
-    return render(request, 'account/register.html', {'form': form})
+        current_step = int(request.POST.get('step', 1))
+
+        if current_step == 1:
+            user_form = UserCreationForm(request.POST)
+            if user_form.is_valid():
+                user_clean_data = str(user_form.cleaned_data)
+                user_dict = ast.literal_eval(user_clean_data)
+                data = f"{user_dict['username']}={user_dict['password1']}"
+                b = base64.b64encode(
+                    data.encode('utf-8')).decode('utf-8')
+                return render(request, 'account/register.html', {
+                    'crd': b,  # Pass the entire POST data
+                    'personal_form': PersonalInfoForm(),
+                    'affiliation_form': AffiliationInfoForm(),
+
+                    'step': 2
+                })
+            else:
+                return render(request, 'account/register.html', {
+                    'user_form': user_form,
+                    'step': 1
+                })
+
+        elif current_step == 2:
+            user_clean_data = request.POST.get('crd')
+            decoded_bytes = base64.b64decode(user_clean_data)
+            decoded_string = decoded_bytes.decode('utf-8')
+            # Split the decoded string to get username and password
+            username, password = decoded_string.split('=')
+
+            # Create the user
+            
+            #user_form = UserCreationForm(request.POST)
+            #user_form.is_valid() 
+            #user = user_form.save()  # Create the User here
+            # Now handle the Author form
+            personal_form = PersonalInfoForm(request.POST)
+            affiliation_form = AffiliationInfoForm(request.POST)
+
+            if personal_form.is_valid() and affiliation_form.is_valid():
+                user = User.objects.create_user(
+                username=username,
+                password=password
+            )
+                author = personal_form.save(commit=False)
+                author.user = user
+                author.save()
+                author = affiliation_form.save(commit=False)
+                author.user = user
+                author.save()
+
+                messages.success(request, 'Registration successful!')
+                login(request, user)
+                return redirect('/')
+            else:
+                return render(request, 'account/register.html', {
+                    'crd': user_clean_data,
+                    'personal_form': PersonalInfoForm(),
+                    'affiliation_form': AffiliationInfoForm(),
+                    'step': 2
+                })
+
+    return render(request, 'account/register.html', {
+        'user_form': UserCreationForm(),
+        'step': 1
+    })
+
+
+def profile_view(request):
+    # Get the current user's author profile
+    try:
+        if request.method == 'POST':
+
+            u_form=UserUpdateForm(request.POST,instance=request.user)
+            if u_form.is_valid():
+
+                
+                u_form.save()
+                messages.success(request, 'Update successful!')
+                return redirect('/profile')
+            # p_form = PersonalInfoForm()
+            # a_form = AffiliationInfoForm()
+            # personal_info = request.user.personalinfo
+            
+            # # Get the display value of the title (not the code)
+            # title_display = personal_info.get_title_display()
+            # name_display = personal_info.first_name
+        else:
+            u_form=UserUpdateForm(instance=request.user)
+
+        context = {
+                'u_form': u_form,
+                # 'p_form': PersonalInfoForm(),  # This will show "Dr." instead of "dr"
+                # 'a_form': AffiliationInfoForm()
+
+        }
+    except Exception as e:
+        # Handle case where user doesn't have personal/affiliation info
+        context = {
+            'personal_info': None,
+            'affiliation_info': None,
+            'title': None,
+            'error': str(e)
+        }
+
+    return render(request, 'account/profile.html', context)

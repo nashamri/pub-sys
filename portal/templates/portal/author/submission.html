@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <h2>Submission Details</h2>
+    {{ submission_form.as_p }}
+
+    <h2>Review Information</h2>
+    {{ review_form.as_p }}
+
+    <h2>Attach Files</h2>
+    {{ files_formset.management_form }}
+    {% for form in files_formset %}
+    <div class="file-form">
+        {{ form.as_p }}
+    </div>
+    {% endfor %}
+
+ 
+<div>
+      <!-- <button type="button">Add Files</button>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Filename</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <input type="file" name="file_upload" id="file_upload">
+                    </td>
+                    <td>
+                        <input type="text" name="description" placeholder="Enter file description">
+                    </td>
+                    <td>
+                  
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</div> -->
+
+
+
+            <button type="submit" name="action" value="submit">Submit</button>
+
+</form>
+
+</body>
+</html>

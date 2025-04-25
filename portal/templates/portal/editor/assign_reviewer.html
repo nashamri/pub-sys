@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h3>New Assignments</h3><br>
+
+    <div class="container">
+        <h2>New Assignments</h2>
+        <form method="post">
+            {% csrf_token %}
+             
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Reviewer Name</th>
+                    <th>Assign</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for reviewer in reviewers %}
+                <tr>
+                   
+
+
+                    <td>{{reviewer.get_full_name}}</td>
+ 
+                 <td><button type="submit" name="selected_user" value="{{ reviewer.id }}">Submit</button></td>
+
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table></form>
+
+        <table border="1">
+        <thead>
+            <tr>
+                <th>Rank</th>
+
+                <th>Reviewer Name</th>
+                <th>Assign</th>
+        
+            </tr>
+        </thead>
+        <tbody>
+        
+            {% for reviewer_obj in assigned_reviewers %}
+            <tr>
+        
+        
+                <td>{{ reviewer_obj.reviewer.id}}</td>
+
+                <td>{{ reviewer_obj.reviewer.get_full_name}}</td>
+                    
+            <td>
+                <form method="POST"
+                    action="{% url 'portal:remove_reviewer' submission.submission_id reviewer_obj.reviewer.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                </form>
+            </td>
+
+        
+            </tr>
+            {% endfor %}
+        
+        </tbody>
+        </table>
+
+
+    </div>
+
+</body>
+
+</html>

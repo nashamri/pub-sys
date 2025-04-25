@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h3>Assignments</h3><br>
+    <a href="{% url 'portal:new_assignments' %}">New Assignments</a><br>
+    <a>Revised Submissions</a><br>
+    <a>Submissions waiting decision</a><br>
+    <h3>Reviews in Progress</h3>
+    <a>Waiting for Reviewers</a><br>
+    <a>Submissions Under Review</a><br>
+    {{form.as_p}}
+<div class="container">
+    <h2>New Assignments</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Status</th>
+                <th>Article Title</th>
+                <th>Author Name</th>
+                <th>Manuscript Number</th>
+             
+            </tr>
+        </thead>
+        <tbody>
+
+                {% for submission in submissions %}
+
+            <tr>
+                <td><button>Edit</button></td>
+                <td>{{submission.current_status}}</td>
+  <td><h2><a class="article-title" href="{% url 'portal:editor_assignment_details' submission.submission_id %}">{{ submission.title }}</a></h2></td>
+
+                <td>{{submission.author}}</td>
+                <td>{{submission.submission_id}}</td>
+                <td>{{submission.current_status}}</td>
+
+            </tr>
+                    {% endfor %}
+
+        </tbody>
+    </table>
+     <!-- Submission Selector -->
+ 
+    <!-- Submission Form -->
+    <form method="post">
+        {% csrf_token %}
+        {% for field in submissions %}
+        <div class="form-group">
+            <label>{{ field.label }}:</label>
+            {{ field }}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary mt-3">Update Status</button>
+    </form>
+</div>
+
+</body>
+</html>
