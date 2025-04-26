@@ -27,7 +27,7 @@
                 <h2 class="title is-4">Quick Links</h2>
                 <div class="box">
                     <div class="buttons">
-                        <a href="{% url 'submit_article' %}" class="button is-primary is-fullwidth">
+                        <a href="{% if user.is_authenticated %}{% url 'submit_article' %}{% else %}{% url 'login_page' %}?next={% url 'submit_article' %}{% endif %}" class="button is-primary is-fullwidth">
                             Submit Your Article
                         </a>
                         <a href="{% url 'guidelines_page' %}" class="button is-info is-fullwidth">
