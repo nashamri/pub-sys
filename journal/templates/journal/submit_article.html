@@ -1,4 +1,5 @@
 {% extends 'journal/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}Submit Article - {{ block.super }}{% endblock %}
 
@@ -10,7 +11,7 @@
             {% csrf_token %}
             <fieldset class="fieldset">
                 <legend class="subtitle">Article Details</legend>
-                {{ form.as_p }}
+                {{ form |crispy }}
             </fieldset>
             <div class="field">
                 <div class="control">

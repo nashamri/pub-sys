@@ -17,6 +17,10 @@
         nixpkgs.lib.genAttrs supportedSystems
         (system: f { pkgs = import nixpkgs { inherit system; }; });
     in {
+
+      packages = forEachSupportedSystem ({ pkgs }: {
+        django-bulma = pkgs.callPackage ./packages/django-bulma.nix { };
+      });
       devShells = forEachSupportedSystem ({ pkgs }: {
         default = pkgs.mkShell {
           packages = with pkgs;
@@ -33,6 +37,8 @@
               pip
               django
               django-types
+              django-crispy-forms
+              self.packages.x86_64-linux.django-bulma
 
             ]);
         };

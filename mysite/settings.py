@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-@837%vbng-5&%kaljl4fcl4^z2!b51#@4zf=^e#wu911gdjv4)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [ "nashamri.pythonanywhere.com" ]
+# ALLOWED_HOSTS = [ "nashamri.pythonanywhere.com" ]
 
 
 # Application definition
@@ -38,8 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'journal', # Add the journal app
+    'crispy_forms',
+    'crispy_bulma',
+    'journal',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -127,3 +130,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = ("bulma",)
+CRISPY_TEMPLATE_PACK = "bulma"
