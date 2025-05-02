@@ -1,0 +1,65 @@
+{% extends "journal/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title is-2">Latest Accepted Articles</h1>
+        
+        {% if articles %}
+            <div class="articles-list">
+                {% for article in articles %}
+                    <div class="box article-item mb-4">
+                        <h2 class="title is-4">{{ article.title }}</h2>
+                        <p class="subtitle is-6">
+                            {% if article.authors %}
+                                {{ article.authors }}
+                            {% else %}
+                                {{ article.author.get_full_name|default:article.author.username }}
+                            {% endif %}
+                        </p>
+                        
+                        {% if article.abstract %}
+                            <div class="content">
+                                <p><strong>Abstract:</strong> {{ article.abstract }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if article.keywords %}
+                            <div class="tags">
+                                <span class="tag">Keywords:</span>
+                                {% for keyword in article.keywords.split %}
+                                    <span class="tag is-info">{{ keyword }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="article-meta mt-3">
+                            <p><strong>Type:</strong> {{ article.get_type_display }}</p>
+                            <p><strong>Accepted on:</strong> {{ article.acceptance_date }}</p>
+                            {% if article.publication_date %}
+                                <p><strong>Published on:</strong> {{ article.publication_date }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        {% if article.pdf_file %}
+                            <div class="mt-4">
+                                <a href="{{ article.pdf_file.url }}" class="button is-primary" target="_blank">
+                                    <span class="icon">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </span>
+                                    <span>Download PDF</span>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="notification is-info">
+                <p>No accepted articles available at this time.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
