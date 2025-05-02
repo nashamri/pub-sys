@@ -7,12 +7,27 @@
 <h1 class="title">Article Revision History</h1>
 
 <div class="box">
+
+
+
+
     <h2 class="subtitle">{{ article.title }}</h2>
     <p><strong>Author:</strong> {{ article.author.username }}</p>
     <p><strong>Type:</strong> {{ article.get_type_display }}</p>
     <p><strong>Submission Date:</strong> {{ article.submission_date }}</p>
     <p><strong>Current Status:</strong> {{ article.get_decision_display }}</p>
-    
+
+            <form method="post">
+                {% csrf_token %}
+            {% for field in ArticleEditorForm %}
+            <div class="form-group">
+                <label>{{ field.label }}:</label>
+                {{ field }}
+            </div>
+            {% endfor %}
+ 
+    <button type="submit" class="utton is-light mt-3">Update Status</button>
+    </form>
     {% if article.pdf_file %}
         <a href="{{ article.pdf_file.url }}" class="button is-link" target="_blank">
             View Current PDF
