@@ -18,8 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-# Remove the direct import of journal views as we will use include
-# from journal import views as journal_views
 
 urlpatterns = [
     # Include the journal app's URLs under the root path ''

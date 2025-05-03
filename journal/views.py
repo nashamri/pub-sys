@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone  # Import timezone for setting dates
 from django.db.models import Max
 from .forms import ArticleEditorForm, UserRegisterForm, ArticleSubmissionForm, ReviewForm, AuthorResponseForm, ReviewerAssignmentForm # Import the forms
-from .models import Review, Article, AuthorResponse, Profile, Affiliation, Article
+from .models import Review, Article, AuthorResponse, Profile, Affiliation
 
 @login_required
 def submissions_page(request):
