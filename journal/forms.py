@@ -3,6 +3,35 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Affiliation, Article, Review, AuthorResponse
 
+class ArticleEditorForm(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = [
+            'decision'
+        ]
+        exclude = [
+            'author', 
+            'submission_date', 
+            'acceptance_date', 
+            'publication_date',
+            'reviewers'  # Exclude the reviewers field
+        ]  # These fields are set in the view or by the system
+
+        widgets = {
+
+            'decision': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Make most fields disabled (view-only)
+        for field_name, field in self.fields.items():
+            # Skip fields you want to remain editable
+            if field_name not in ['decision',]:
+                field.disabled = True
+
 class ArticleSubmissionForm(forms.ModelForm):
     class Meta:
         model = Article

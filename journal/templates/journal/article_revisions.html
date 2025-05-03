@@ -1,5 +1,6 @@
 {% extends 'journal/base.html' %}
 {% load journal_filters %}
+{% load crispy_forms_tags %}
 
 {% block title %}Article Revisions - {{ block.super }}{% endblock %}
 
@@ -7,21 +8,39 @@
 <h1 class="title">Article Revision History</h1>
 
 <div class="box">
+
     <h2 class="subtitle">{{ article.title }}</h2>
     <p><strong>Author:</strong> {{ article.author.username }}</p>
     <p><strong>Type:</strong> {{ article.get_type_display }}</p>
     <p><strong>Submission Date:</strong> {{ article.submission_date }}</p>
     <p><strong>Current Status:</strong> {{ article.get_decision_display }}</p>
-    
-    {% if article.pdf_file %}
-        <a href="{{ article.pdf_file.url }}" class="button is-link" target="_blank">
-            View Current PDF
-        </a>
-    {% endif %}
-    
-    <a href="{% url 'assignment_page' %}" class="button is-light mt-3">
-        Back to Admin Page
-    </a>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <div class="field has-addons">
+                <p class="control is-align-content-center"><strong>Final Decision:</strong></p>
+                <div class="control ml-3">
+                  <div class="select control">
+                      {% for field in ArticleEditorForm %}
+                          {{ field }}
+                      {% endfor %}
+                  </div>
+                  <span class="control">
+                      <button type="submit" class="button is-link">Update Status</button>
+                  </span>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="field mt-3">
+      {% if article.pdf_file %}
+          <a href="{{ article.pdf_file.url }}" class="button is-primary" target="_blank">View Current PDF</a>
+      {% endif %}
+      <a href="{% url 'assignment_page' %}" class="button is-info"> Back to Admin Page </a>
+    </div>
+
 </div>
 
 {% if reviewers_data %}

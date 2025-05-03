@@ -6,7 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm # I
 from django.contrib.auth.models import User
 from django.utils import timezone  # Import timezone for setting dates
 from django.db.models import Max
-from .forms import UserRegisterForm, ArticleSubmissionForm, ReviewForm, AuthorResponseForm, ReviewerAssignmentForm # Import the forms
+from .forms import ArticleEditorForm, UserRegisterForm, ArticleSubmissionForm, ReviewForm, AuthorResponseForm, ReviewerAssignmentForm # Import the forms
 from .models import Review, Article, AuthorResponse, Profile, Affiliation, Article
 
 @login_required
@@ -335,7 +335,15 @@ def assign_reviewers(request, article_id):
 def article_revisions(request, article_id):
     """View for admins to see all revisions and responses for an article."""
     article = get_object_or_404(Article, id=article_id)
-    
+    if request.method == 'POST':
+        form = ArticleEditorForm(request.POST, instance=article)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Submission updated successfully!")
+            return redirect('assignment_page')
+    else:
+        arc = ArticleEditorForm(instance=article)
+
     # Get all reviews for this article, ordered by reviewer and revision
     reviews = Review.objects.filter(article=article).order_by('reviewer', 'revision')
     
@@ -353,7 +361,9 @@ def article_revisions(request, article_id):
     responses = AuthorResponse.objects.filter(article=article).order_by('-created_at')
     
     return render(request, 'journal/article_revisions.html', {
+        
         'article': article,
+        'ArticleEditorForm':arc,
         'reviewers_data': reviewers_data,
         'responses': responses
     })
