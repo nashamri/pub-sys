@@ -17,7 +17,10 @@ urlpatterns = [
     path('assignment/', views.assignment_page, name='assignment_page'),
     path('assignment/assign/<int:article_id>/', views.assign_reviewers, name='assign_reviewers'),
     path('assignment/revisions/<int:article_id>/', views.article_revisions, name='article_revisions'),
+    path('accepted-articles/', views.accepted_articles, name='accepted_articles'),
     ]
+
+
 
 
 

@@ -287,6 +287,12 @@ def account_page(request):
         form = PasswordChangeForm(request.user)
     return render(request, 'journal/account.html', {'form': form})
 
+def accepted_articles(request):
+    """Renders a page showing the latest accepted articles."""
+    # Get all articles with 'accepted' decision, ordered by acceptance date (newest first)
+    articles = Article.objects.filter(decision='accepted').order_by('-acceptance_date')
+    return render(request, 'journal/accepted_articles.html', {'articles': articles})
+
 # Helper function to check if user is admin
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -361,3 +367,4 @@ def article_revisions(request, article_id):
         'reviewers_data': reviewers_data,
         'responses': responses
     })
+
