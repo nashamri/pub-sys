@@ -1,5 +1,5 @@
 {% extends 'journal/base.html' %}
-
+{% load crispy_forms_tags %}
 {% block title %}Register - {{ block.super }}{% endblock %}
 
 {% block content %}
@@ -11,7 +11,7 @@
             <fieldset class="fieldset">
                 <legend class="subtitle">Create Account</legend>
                 {{ form.non_field_errors }}
-                {{ form.as_p }}
+                {{ form|crispy}}
             </fieldset>
             <div class="field">
                 <div class="control">

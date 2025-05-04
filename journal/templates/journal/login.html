@@ -1,5 +1,5 @@
     {% extends 'journal/base.html' %}
-
+{% load crispy_forms_tags %}
     {% block title %}Login - {{ block.super }}{% endblock %}
 
     {% block content %}
@@ -10,7 +10,7 @@
                 {% csrf_token %} <!-- Important for security -->
                 <fieldset class="fieldset">
                     <legend class="subtitle">Enter Credentials</legend>
-                    {{ form.as_p }} <!-- Render the login form fields -->
+                    {{ form | crispy}} <!-- Render the login form fields -->
                 </fieldset>
                 <div class="field">
                     <div class="control">

@@ -1,6 +1,5 @@
 {% extends 'journal/base.html' %}
 {% load journal_filters %}
-
 {% block title %}Review Article - {{ block.super }}{% endblock %}
 
 {% block content %}
@@ -72,7 +71,7 @@
             <label class="label">Status</label>
             <div class="control">
                 <div class="select">
-                    {{ form.status }}
+                    {{ form.status  }}
                 </div>
             </div>
             <p class="help">
